@@ -149,11 +149,11 @@ v0.08 2018-08-14  Servo outputs, not RC inputs
 //#define Target_Board   2      // Maple_Mini STM32F103C   OR un-comment this line if you are using a Maple_Mini STM32F103C
 
 // Choose one (only) of these three modes
-#define Ground_Mode          // Converter between Taranis and LRS tranceiver (like Orange)
-//#define Air_Mode             // Converter between FrSky receiver (like XRS) and Flight Controller (like Pixhawk)
+//#define Ground_Mode          // Converter between Taranis and LRS tranceiver (like Orange)
+#define Air_Mode             // Converter between FrSky receiver (like XRS) and Flight Controller (like Pixhawk)
 //#define Relay_Mode           // Converter between LRS tranceiver (like Orange) and FrSky receiver (like XRS) in relay box on the ground
 
-#define Use_Local_Battery_mAh     //  Un-comment this if you want to define battery mAhs here, no FC tx line needed. Alternatively
+//#define Use_Local_Battery_mAh     //  Un-comment this if you want to define battery mAhs here, no FC tx line needed. Alternatively
                                   //    enter battery capacities into yaapu's LUA script menu
 
 const uint16_t bat1_capacity = 5200;       //  These are ignored if the above #define is commented out
@@ -800,6 +800,10 @@ void DecodeOneMavFrame() {
           if (!mavGood) break;
           ap_voltage_battery1= Get_Volt_Average1(mavlink_msg_sys_status_get_voltage_battery(&msg));        // 1000 = 1V  i.e mV
           ap_current_battery1= Get_Current_Average1(mavlink_msg_sys_status_get_current_battery(&msg));     //  100 = 1A, i.e dA
+          //dual battery simulator
+          ap_voltage_battery2 = ap_voltage_battery1;        // 1000 = 1V
+          ap_current_battery2 = ap_current_battery1;
+          //
           if(ap_voltage_battery1> 21000) ap_ccell_count1= 6;
             else if (ap_voltage_battery1> 16800 && ap_ccell_count1!= 6) ap_ccell_count1= 5;
             else if(ap_voltage_battery1> 12600 && ap_ccell_count1!= 5) ap_ccell_count1= 4;
@@ -843,7 +847,8 @@ void DecodeOneMavFrame() {
               #endif
               break;
             case 364:         // Bat2 Capacity
-              ap_bat2_capacity = ap_param_value;
+              //ap_bat2_capacity = ap_param_value;
+              ap_bat2_capacity = ap_bat1_capacity;
               ap_bat_paramsRead = true;
               #if defined Mav_Debug_All || defined Debug_Batteries
                 Debug.print("Mavlink in #22 Param_Value: ");
@@ -1112,6 +1117,7 @@ void DecodeOneMavFrame() {
             Debug.print(" bat mAh= ");  Debug.print(ap_current_consumed);       
             Debug.print(" bat % remaining= ");  Debug.println(ap_time_remaining);       
           #endif  
+          ap_current_battery2 = ap_current_battery;     //  100 = 1A
           break;    
         case MAVLINK_MSG_ID_SENSOR_OFFSETS:    // #150   http://mavlink.org/messages/ardupilotmega
           if (!mavGood) break;        
