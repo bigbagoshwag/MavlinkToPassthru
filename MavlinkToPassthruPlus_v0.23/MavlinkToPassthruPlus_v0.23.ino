@@ -273,12 +273,12 @@ uint8_t BufLedState = LOW;
 //#define Frs_Debug_Hud
 //#define Mav_Debug_Scaled_Pressure
 //#define Mav_Debug_Attitude
-#define Frs_Debug_Attitude
+//#define Frs_Debug_Attitude
 //#define Mav_Debug_Text
 //#define Frs_Debug_Text    
 //#define Mav_Debug_Mission 
 //#define Frs_Debug_Mission              
-#define Mav_Debug_Range 
+//#define Mav_Debug_Range 
 //*****************************************************************************************************************
 
 uint8_t   buf[MAVLINK_MAX_PACKET_LEN];
